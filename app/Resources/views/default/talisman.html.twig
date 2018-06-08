@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="wrapper">
+        <div id="container">
+            <div id="welcome">
+                <h1><span>Welcome to</span> Talisman</h1>
+            </div>
+
+            <div id="next">
+                {% include "FOSUserBundle:Security:login.html.twig" %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

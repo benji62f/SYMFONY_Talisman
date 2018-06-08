@@ -1,0 +1,195 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>LA BAGARRE</h1>
+    <div id="wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 character">
+                    <h3 class="texte">{{ character[0].name }}</h3>
+                    <p class="texte">{{ character[0].race.name }}</p>
+                    <p class="texte" id="char_life">vie:{{ character[0].life }}</p>
+                    <p class="texte" id="char_armor">armure:{{ character[0].armor }}</p>
+                    <p class="texte" id="char_strengh">force:{{ character[0].strengh }}</p>
+                    <p class="texte" id="char_dexterity">dexterite:{{ character[0].dexterity }}</p>
+                </div>
+                <div class="col-lg-8">
+                    <h1 class="titleBattle">Versus</h1>
+                    <div class="battle_background">
+                        <div class="character_sprite"></div>
+                        <div class="opponent_sprite"></div>
+                    </div>
+                    <div class="battle_textground">
+                        <p class='battle_text'>Le combat commence !</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 opponent">
+                    <h3 class="texte">{{ opponent[0].name }}</h3>
+                    <p class="texte">{{ opponent[0].race.name }}</p>
+                    <p class="texte"  id="oppo_life">vie:{{ opponent[0].life }}</p>
+                    <p class="texte"  id="oppo_armor">armure:{{ opponent[0].armor }}</p>
+                    <p class="texte"  id="oppo_strengh">force:{{ opponent[0].strengh }}</p>
+                    <p class="texte"  id="oppo_dexterity">dexterité:{{ opponent[0].dexterity }}</p>
+                </div>
+            </div>
+            <div class="row btngroup">
+                <button class="btn btn-info" id="offensive_phase">Attaque</button>
+                <button class="btn btn-info" id="defensive_phase">Defense</button>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var win = false;
+        var character_name = "{{ character[0].name }}";
+        var character_strengh = "{{ character[0].strengh }}";
+        var character_life = "{{ character[0].life }}";
+        var character_dexterity = "{{ character[0].dexterity }}";
+        var character_armor = "{{ character[0].armor }}";
+        var character_def = false;
+
+        var opponent_name = "{{ opponent[0].name }}";
+        var opponent_strengh = "{{ opponent[0].strengh }}";
+        var opponent_life = "{{ opponent[0].life }}";
+        var opponent_dexterity = "{{ opponent[0].dexterity }}";
+        var opponent_armor = "{{ opponent[0].armor }}";
+
+        function sleep(milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds){
+                    break;
+                }
+            }
+        }
+
+        $("#offensive_phase").click(function() {
+            if (!win) attack();
+            $('.character_sprite').addClass("horizontaltranslate");
+            $('.opponent_sprite').addClass("horizontaltranslate");
+            $(".opponent_sprite").on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
+                function () {
+                    $('.opponent_sprite').addClass("attack");
+                    $(".opponent_sprite").on("webkitAnimationEnd oAnimationEnd msAnimationEnd animationend", function () {
+                        $(".opponent_sprite").removeClass("attack");
+                        $('.opponent_sprite').removeClass("horizontaltranslate");
+                    });
+                });
+            $(".character_sprite").on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
+                function () {
+                    $('.character_sprite').addClass("attack");
+                    $(".character_sprite").on("webkitAnimationEnd oAnimationEnd msAnimationEnd animationend", function () {
+                        $(".character_sprite").removeClass("attack");
+                        $('.character_sprite').removeClass("horizontaltranslate");
+                    });
+                });
+        });
+        $("#defensive_phase").click(function(){
+            if(!win) defense();
+        });
+
+        function attack() {
+            $('.battle_textground').append("<p class='battle_text'> " + character_name + " <b>attaque</b> " + opponent_name + " ce tour </p>");
+            opponent_life = setDamage(character_name, character_strengh, opponent_life, opponent_dexterity, opponent_armor);
+            $('#oppo_life').html("vie:"+opponent_life);
+            if(isDead(opponent_life))
+            {
+                $('.battle_textground').append("<p class='battle_text'> " + character_name + " <b style='color: chartreuse'>GAGNE</b> le match ! </p>");
+                win = true;
+                return;
+            }
+            nextTurn();
+        }
+
+        function defense() {
+            $('.battle_textground').append("<p class='battle_text'> " + character_name + " <b>se defend contre</b> " + opponent_name + " ce tour </p>");
+            character_def = true;
+            nextTurn();
+        }
+
+        function isDead(target_life) {
+            if(target_life<=0)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        function heal(target,target_life,lifemax) {
+            var jet = 1 + Math.floor(Math.random() * 100);
+            if(jet>65) /* réussite */
+            {
+                var jet = 1 + Math.floor(Math.random() * 30);
+                var new_life = target_life + jet;
+                if (new_life>lifemax) new_life = lifemax;
+                $('.battle_textground').append("<p class='battle_text'> " + target + " <b style='color: #66dd66'>se heal !  +</b> " +  jet  +" pdv </p>");
+                return new_life;
+            }
+            else
+            {
+                $('.battle_textground').append("<p class='battle_text'> " + target + " <b>ne réussit pas</b> a se heal !</p>");
+                return target_life;
+            }
+        }
+
+
+        function setDamage(charact,charact_strengh,target_life,target_dexterity,target_armor)
+        {
+            var jet_charact = 1 + Math.floor(Math.random() * 100);
+            var jet_target =  1 + Math.floor(Math.random() * 100);
+            if(jet_charact>jet_target) /* hit */
+            {
+                var multiplicateur = Math.random();
+                var damage = Math.ceil(charact_strengh*multiplicateur);
+                $('.battle_textground').append("<p class='battle_text'> " + charact + " <b style='color: #AA3333'>inflige</b> " + damage  + " </p>");
+                return target_life-damage;
+            }
+            else
+            {
+                $('.battle_textground').append("<p class='battle_text'> " + charact + " <b>rate</b> son coup </p>");
+                return target_life;
+            }
+
+        }
+
+        function nextTurn() {
+            var jet = 1 + Math.floor(Math.random() * 100);
+            if(jet <= 50) { /* attaque du bot */
+                $('.battle_textground').append("<p class='battle_text'> " + opponent_name + " <b>attaque</b> " + character_name + " ce tour </p>");
+                if(!character_def)
+                {
+                    character_life = setDamage(opponent_name, opponent_strengh, character_life, character_dexterity, character_armor);
+                    $('#char_life').html("vie:"+character_life);
+                    if(isDead(character_life))
+                    {
+                        $('.battle_textground').append("<p class='battle_text'> " + opponent_name + " <b style='color: chartreuse'>GAGNE</b> le match ! </p>");
+                        win = true;
+                        return;
+                    }
+                }
+                else
+                {
+                    $('.battle_textground').append("<p class='battle_text'> " + character_name + " <b style='color: #5eb5e0'>pare</b>  le coup </p>");
+                    character_def = false;
+                }
+            }
+            else if(opponent_life<{{ opponent[0].life }})
+            {
+                opponent_life = heal(opponent_name,opponent_life,{{ opponent[0].life }});
+                $('#oppo_life').html("vie:" + opponent_life);
+            } //heal
+            else $('.battle_textground').append("<p class='battle_text'> " + opponent_name + " <b>panique</b> ! </p>");
+
+        }
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('public/css/game.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('public/css/character_race.css') }}" type="text/css" rel="stylesheet" />
+{% endblock %}

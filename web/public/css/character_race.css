@@ -1,0 +1,68 @@
+.character_sprite{
+    position:absolute;
+    margin-top: 35px;
+    width: calc(1497px/7) ;
+    height: 150px;
+    background-image: url("../images/orc/IDLE/iddle_sprite.png");
+    background-repeat: no-repeat;
+    padding-bottom: -50px;
+    animation: play 1.2s steps(7) infinite;
+}
+.character_sprite.horizontaltranslate
+{
+    -webkit-transition: 2s;
+    -moz-transition: 2s;
+    -o-transition: 2s;
+    transition: 2s;
+    margin-left: 15% !important;
+}
+.character_sprite.attack
+{
+    background-image: url("../images/orc/ATTAK/attack_sprite.png");
+    height: 186px;
+    width: calc(1497px/7) ;
+    margin-top: unset;
+    animation: play 1.2s steps(7) 8;
+    
+}
+.opponent_sprite{ /* reverse */
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    position:absolute;
+    margin-top: 35px;
+    margin-left: 290px;
+    width: calc(1497px/7) ;
+    height: 150px;
+    background-image: url("../images/orc/IDLE/iddle_sprite.png");
+    background-repeat: no-repeat;
+    padding-bottom: -50px;
+    animation: play 1.2s steps(7) infinite;
+}
+.opponent_sprite.attack
+{
+    background-image: url("../images/orc/ATTAK/attack_sprite.png");
+    height: 186px;
+    width: calc(1497px/7) ;
+    margin-top: unset;
+    animation: play 1.2s steps(7) 8;
+    
+}
+.opponent_sprite.horizontaltranslate{
+    -webkit-transition: 2s;
+    -moz-transition: 2s;
+    -o-transition: 2s;
+    transition: 2s;
+    margin-left: 40% !important;
+}
+
+@keyframes play {
+    from{
+        background-position: 0;
+    }
+    to {
+        background-position: -1497px;
+    }
+}
+

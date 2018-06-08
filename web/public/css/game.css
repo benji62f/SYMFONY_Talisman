@@ -1,0 +1,44 @@
+.btngroup, .character, .opponent
+{
+    margin-top:50px;
+}
+#offensive_phase{
+    margin-left: 40%;
+}
+#defensive_phase
+{
+    margin-left: 5px;
+}
+.texte
+{
+    text-align: center;
+    
+}
+.titleBattle{
+    text-align: center;
+}
+.battle_background {
+    width: 100%;
+    height: 225px;
+    margin: auto;
+    /*background-color: aqua;*/
+    background-image: url("../images/forest_battle_background.png");
+    display:flex ;
+}
+.battle_textground {
+    width: 100%;
+    height: 300px;
+    margin: auto;
+    background-color: #999999;
+    display: block;
+    overflow: auto;
+}
+
+.battle_text {
+    margin: auto;
+    background-color: #999999;
+    display: block;
+}
+
+
+
